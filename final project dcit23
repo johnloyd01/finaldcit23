@@ -1,0 +1,119 @@
+package rpsgame;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Random;
+
+public class Rpsgame extends Frame implements ActionListener {
+    private static final long serialVersionUID = 1L;
+
+    private String[] choices = {"Rock", "Paper", "Scissors"};
+    private String playerChoice = "";
+    private String computerChoice = "";
+    private String result = "";
+
+    private Button rockButton, paperButton, scissorsButton;
+    private Label resultLabel;
+    private Panel choicePanel, resultPanel;
+
+    public Rpsgame () {
+        setLayout(new BorderLayout());
+
+       
+        rockButton = new Button("Rock");
+        paperButton = new Button("Paper");
+        scissorsButton = new Button("Scissors");
+
+       
+        rockButton.addActionListener(this);
+        paperButton.addActionListener(this);
+        scissorsButton.addActionListener(this);
+
+       
+        choicePanel = new Panel();
+        resultPanel = new Panel();
+
+        
+        choicePanel.add(rockButton);
+        choicePanel.add(paperButton);
+        choicePanel.add(scissorsButton);
+
+        
+        resultLabel = new Label("Make your choice!", Label.CENTER);
+        resultPanel.add(resultLabel);
+
+       
+        add(choicePanel, BorderLayout.NORTH);
+        add(resultPanel, BorderLayout.SOUTH);
+
+       
+        setTitle("Rock Paper Scissors");
+        setSize(300, 200);
+        setVisible(true);
+
+      
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                dispose();
+            }
+        });
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Button source = (Button) e.getSource();
+        playerChoice = source.getLabel();
+        computerChoice = choices[new Random().nextInt(choices.length)];
+
+        determineWinner();
+        repaint();
+    }
+
+    private void determineWinner() {
+        if (playerChoice.equals(computerChoice)) {
+            result = "It's a tie!";
+        } else if ((playerChoice.equals("Rock") && computerChoice.equals("Scissors")) ||
+                   (playerChoice.equals("Paper") && computerChoice.equals("Rock")) ||
+                   (playerChoice.equals("Scissors") && computerChoice.equals("Paper"))) {
+            result = "You win!";
+        } else {
+            result = "Computer wins!";
+        }
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        int playerX = 50, computerX = 200;
+        int y = 100;
+
+        g.drawString("Player: " + playerChoice, playerX, y);
+        g.drawString("Computer: " + computerChoice, computerX, y);
+        g.drawString(result, 125, 150);
+
+        if (!playerChoice.isEmpty() && !computerChoice.isEmpty()) {
+            animateChoices(g, playerX, y - 20, computerX, y - 20);
+        }
+    }
+
+    private void animateChoices(Graphics g, int playerX, int playerY, int computerX, int computerY) {
+        for (int i = 0; i < 10; i++) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            g.clearRect(playerX, playerY - 20, 100, 20);
+            g.clearRect(computerX, computerY - 20, 100, 20);
+
+            playerY += 5;
+            computerY += 5;
+            g.drawString(playerChoice, playerX, playerY);
+            g.drawString(computerChoice, computerX, computerY);
+        }
+    }
+
+    public static void main(String[] args) {
+        new Rpsgame();
+    }
+}
